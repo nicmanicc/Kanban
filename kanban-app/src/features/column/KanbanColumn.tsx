@@ -3,18 +3,24 @@ import React from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Plus } from "lucide-react"
+import { useDroppable } from "@dnd-kit/react"
 
 type KanbanColumnProps = {
+  id: string
   title: string
   children?: React.ReactNode
   onAddCard?: () => void
 }
 
-export function KanbanColumn({ title, children, onAddCard }: KanbanColumnProps) {
+export function KanbanColumn({ id, title, children, onAddCard }: KanbanColumnProps) {
   const cardCount = React.Children.count(children)
+  const { ref, isDropTarget } = useDroppable({ id })
 
   return (
-    <div className="flex w-72 shrink-0 flex-col gap-3 rounded-xl bg-muted/50 p-3 ring-1 ring-foreground/10">
+    <div
+      ref={ref}
+      className={`flex w-72 shrink-0 flex-col gap-3 rounded-xl p-3 ring-1 transition-colors ${isDropTarget ? "bg-primary/10 ring-primary" : "bg-muted/50 ring-foreground/10"}`}
+    >
       {/* Column header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
@@ -29,10 +35,12 @@ export function KanbanColumn({ title, children, onAddCard }: KanbanColumnProps) 
       </div>
 
       {/* Cards */}
-      <ScrollArea className="flex max-h-[calc(100vh-12rem)] flex-col">
+      <ScrollArea className="max-h-[calc(100vh-12rem)]">
         <div className="flex flex-col gap-2 pr-1">
           {cardCount > 0 ? children : (
-            <p className="py-6 text-center text-xs text-muted-foreground">No cards yet</p>
+            <div className="flex min-h-[120px] items-center justify-center">
+              <p className="text-xs text-muted-foreground">No cards yet</p>
+            </div>
           )}
         </div>
       </ScrollArea>
