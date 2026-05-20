@@ -10,11 +10,44 @@ type KanbanBoardProps = {
 export function KanbanBoard({ children }: KanbanBoardProps) {
   const columnsRef = React.useRef<HTMLDivElement>(null)
 
-  function handleHorizontalScroll(e: React.WheelEvent<HTMLDivElement>) {
-    if (e.deltaY === 0) return
-    e.preventDefault()
-    columnsRef.current!.scrollLeft += e.deltaY / 1.5
-  }
+  React.useEffect(() => {
+    const slider = columnsRef.current
+    if (!slider) return
+
+    let mouseDown = false
+    let startX = 0
+    let scrollLeft = 0
+
+    const startDragging = (e: MouseEvent) => {
+      mouseDown = true
+      startX = e.pageX - slider.offsetLeft
+      scrollLeft = slider.scrollLeft
+    }
+
+    const stopDragging = () => {
+      mouseDown = false
+    }
+
+    const move = (e: MouseEvent) => {
+      e.preventDefault()
+      if (!mouseDown) return
+      const x = e.pageX - slider.offsetLeft
+      const scroll = x - startX
+      slider.scrollLeft = scrollLeft - scroll
+    }
+
+    slider.addEventListener('mousemove', move, { passive: false })
+    slider.addEventListener('mousedown', startDragging)
+    slider.addEventListener('mouseup', stopDragging)
+    slider.addEventListener('mouseleave', stopDragging)
+
+    return () => {
+      slider.removeEventListener('mousemove', move)
+      slider.removeEventListener('mousedown', startDragging)
+      slider.removeEventListener('mouseup', stopDragging)
+      slider.removeEventListener('mouseleave', stopDragging)
+    }
+  }, [])
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -26,8 +59,7 @@ export function KanbanBoard({ children }: KanbanBoardProps) {
       {/* Columns area */}
       <div
         ref={columnsRef}
-        onWheel={handleHorizontalScroll}
-        className="[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none flex flex-1 items-start gap-4 overflow-x-auto p-6"
+        className="[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none flex flex-1 items-start gap-4 overflow-x-auto p-6 scroll-smooth will-change-transform"
       >
         {children}
 

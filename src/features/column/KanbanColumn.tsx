@@ -19,7 +19,7 @@ export function KanbanColumn({ id, title, children, onAddCard }: KanbanColumnPro
   return (
     <div
       ref={ref}
-      className={`flex w-72 shrink-0 flex-col gap-3 rounded-xl p-3 ring-1 transition-colors ${isDropTarget ? "bg-primary/10 ring-primary" : "bg-muted/50 ring-foreground/10"}`}
+      className={`flex w-72 overflow-y-scroll shrink-0 flex-col gap-3 rounded-xl p-3 ring-1 transition-colors ${isDropTarget ? "bg-primary/10 ring-primary" : "bg-muted/50 ring-foreground/10"}`}
     >
       {/* Column header */}
       <div className="flex items-center justify-between px-1">
