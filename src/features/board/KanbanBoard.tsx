@@ -1,14 +1,10 @@
 // features/board/KanbanBoard.tsx
-import React, { useEffect, useState } from "react"
+import { useState } from "react"
 import { KanbanColumn } from "../column/KanbanColumn"
 import { KanbanCard } from "../card/KanbanCard"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-
-
-type KanbanBoardProps = {
-  children?: React.ReactNode
-}
+import { useDragScroll } from "@/hooks/useDragScroll"
 
 const dummyData = [
   {
@@ -41,48 +37,21 @@ const dummyData = [
   },
 ]
 
-export function KanbanBoard({ children }: KanbanBoardProps) {
-  const columnsRef = React.useRef<HTMLDivElement>(null)
+
+
+export function KanbanBoard() {
+  const columnsRef = useDragScroll<HTMLDivElement>()
   const [columns, setColumns] = useState(dummyData)
 
-  useEffect(() => {
-    const slider = columnsRef.current
-    if (!slider) return
-
-    let mouseDown = false
-    let startX = 0
-    let scrollLeft = 0
-
-    const startDragging = (e: MouseEvent) => {
-      mouseDown = true
-      startX = e.pageX - slider.offsetLeft
-      scrollLeft = slider.scrollLeft
+  const onButtonClick = () => {
+    const newColumn = {
+      id: (columns.length + 1).toString(),
+      title: `Column ${columns.length + 1}`,
+      cards: [],
     }
+    setColumns([...columns, newColumn])
+  }
 
-    const stopDragging = () => {
-      mouseDown = false
-    }
-
-    const move = (e: MouseEvent) => {
-      e.preventDefault()
-      if (!mouseDown) return
-      const x = e.pageX - slider.offsetLeft
-      const scroll = x - startX
-      slider.scrollLeft = scrollLeft - scroll
-    }
-
-    slider.addEventListener('mousemove', move, { passive: false })
-    slider.addEventListener('mousedown', startDragging)
-    slider.addEventListener('mouseup', stopDragging)
-    slider.addEventListener('mouseleave', stopDragging)
-
-    return () => {
-      slider.removeEventListener('mousemove', move)
-      slider.removeEventListener('mousedown', startDragging)
-      slider.removeEventListener('mouseup', stopDragging)
-      slider.removeEventListener('mouseleave', stopDragging)
-    }
-  }, [])
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -108,6 +77,7 @@ export function KanbanBoard({ children }: KanbanBoardProps) {
         <Button
           variant="outline"
           className="flex w-72 shrink-0 items-center justify-center gap-2 rounded-xl border-dashed py-8 text-muted-foreground hover:text-foreground"
+          onClick={onButtonClick}
         >
           <Plus className="h-4 w-4" />
           Add column
