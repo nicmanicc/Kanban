@@ -4,18 +4,20 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Plus } from "lucide-react"
 import { useDroppable } from "@dnd-kit/react"
 import { Input } from "@/components/ui/input"
+import { KanbanCard } from "@/features/card/KanbanCard"
+import { type CardData, useKanban } from "@/context/KanbanContext"
 
 type KanbanColumnProps = {
   id: string
   title: string
-  children?: React.ReactNode
-  onAddCard?: () => void
+  cards?: CardData[]
 }
 
-export function KanbanColumn({ id, title, children, onAddCard }: KanbanColumnProps) {
-  const cardCount = React.Children.count(children)
+export function KanbanColumn({ id, title, cards = [] }: KanbanColumnProps) {
+  const cardCount = cards.length
   const { ref, isDropTarget } = useDroppable({ id })
   const [columnTitle, setColumnTitle] = useState(title);
+  const { addCard } = useKanban()
 
 
   return (
@@ -36,7 +38,7 @@ export function KanbanColumn({ id, title, children, onAddCard }: KanbanColumnPro
             {cardCount}
           </span>
         </div>
-        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onAddCard}>
+        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => addCard(id)}>
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -44,7 +46,9 @@ export function KanbanColumn({ id, title, children, onAddCard }: KanbanColumnPro
       {/* Cards */}
       <ScrollArea className="max-h-[calc(100vh-12rem)]">
         <div className="flex flex-col gap-2 pr-1">
-          {cardCount > 0 ? children : (
+          {cardCount > 0 ? cards.map((card) => (
+            <KanbanCard key={card.id} id={card.id} title={card.title} description={card.description} priority={card.priority} />
+          )) : (
             <div className="flex min-h-30 items-center justify-center">
               <p className="text-xs text-muted-foreground">No cards yet</p>
             </div>
