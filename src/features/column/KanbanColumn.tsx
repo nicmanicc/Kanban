@@ -1,9 +1,9 @@
-// features/column/KanbanColumn.tsx
-import React from "react"
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Plus } from "lucide-react"
 import { useDroppable } from "@dnd-kit/react"
+import { Input } from "@/components/ui/input"
 
 type KanbanColumnProps = {
   id: string
@@ -15,6 +15,8 @@ type KanbanColumnProps = {
 export function KanbanColumn({ id, title, children, onAddCard }: KanbanColumnProps) {
   const cardCount = React.Children.count(children)
   const { ref, isDropTarget } = useDroppable({ id })
+  const [columnTitle, setColumnTitle] = useState(title);
+
 
   return (
     <div
@@ -24,7 +26,12 @@ export function KanbanColumn({ id, title, children, onAddCard }: KanbanColumnPro
       {/* Column header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold">{title}</h3>
+          <Input
+            value={columnTitle}
+            onChange={(e) => setColumnTitle(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
+            className="text-sm font-semibold border-0 focus-visible:ring-1"
+          />
           <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
             {cardCount}
           </span>
@@ -38,7 +45,7 @@ export function KanbanColumn({ id, title, children, onAddCard }: KanbanColumnPro
       <ScrollArea className="max-h-[calc(100vh-12rem)]">
         <div className="flex flex-col gap-2 pr-1">
           {cardCount > 0 ? children : (
-            <div className="flex min-h-[120px] items-center justify-center">
+            <div className="flex min-h-30 items-center justify-center">
               <p className="text-xs text-muted-foreground">No cards yet</p>
             </div>
           )}
