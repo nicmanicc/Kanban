@@ -17,6 +17,7 @@ type KanbanContextValue = {
   columns: ColumnData[]
   addColumn: () => void
   addCard: (columnId: string) => void
+  updateColumnTitle: (columnId: string, newTitle: string) => void
 }
 
 const KanbanContext = createContext<KanbanContextValue | null>(null)
@@ -49,6 +50,12 @@ const dummyData: ColumnData[] = [
 export function KanbanProvider({ children }: { children: React.ReactNode }) {
   const [columns, setColumns] = useState<ColumnData[]>(dummyData)
 
+  const updateColumnTitle = (columnId: string, newTitle: string) => {
+    setColumns((prev) =>
+      prev.map((col) => (col.id === columnId ? { ...col, title: newTitle } : col))
+    )
+  }
+
   const addColumn = () => {
     setColumns((prev) => [
       ...prev,
@@ -71,7 +78,7 @@ export function KanbanProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <KanbanContext.Provider value={{ columns, addColumn, addCard }}>
+    <KanbanContext.Provider value={{ columns, addColumn, addCard, updateColumnTitle }}>
       {children}
     </KanbanContext.Provider>
   )

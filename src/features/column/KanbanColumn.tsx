@@ -17,7 +17,7 @@ export function KanbanColumn({ id, title, cards = [] }: KanbanColumnProps) {
   const cardCount = cards.length
   const { ref, isDropTarget } = useDroppable({ id })
   const [columnTitle, setColumnTitle] = useState(title);
-  const { addCard } = useKanban()
+  const { addCard, updateColumnTitle } = useKanban()
 
 
   return (
@@ -31,6 +31,7 @@ export function KanbanColumn({ id, title, cards = [] }: KanbanColumnProps) {
           <Input
             value={columnTitle}
             onChange={(e) => setColumnTitle(e.target.value)}
+            onBlur={() => updateColumnTitle(id, columnTitle)}
             onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
             className="text-sm font-semibold border-0 focus-visible:ring-1"
           />
