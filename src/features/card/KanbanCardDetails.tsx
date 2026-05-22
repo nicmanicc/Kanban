@@ -28,7 +28,7 @@ export function KanbanCardDetails({ title = "", description = "" }: KanbanCardDe
           <Input
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
-            className="text-base font-semibold border-transparent shadow-none focus-visible:border-input focus-visible:shadow-sm px-2"
+            className="text-base w-3/4 font-semibold border-transparent shadow-none focus-visible:border-input focus-visible:shadow-sm px-1"
             placeholder="Card title"
           />
         </DialogTitle>
